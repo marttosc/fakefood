@@ -15,6 +15,11 @@ class CreateRestaurantsTable extends Migration
     {
         Schema::create('restaurants', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('social_name');
+            $table->string('fantasy_name');
+            $table->string('cnpj')->unique();
+            $table->text('information');
+            $table->string('email')->unique();
             $table->timestamps();
         });
     }
