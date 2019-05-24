@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Restaurant;
+use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Faker\Generator;
+use App\Http\Controllers\Controller;
 
 class RestaurantController extends Controller
 {
@@ -37,7 +39,20 @@ class RestaurantController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'social_name' => 'required',
+            'fantasy_name' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        if($validator->fails()) {
+            return redirect('api/restaurant/crete')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $validator->save();
+        return response(null, Response::HTTP_OK);
     }
 
     /**
@@ -48,7 +63,7 @@ class RestaurantController extends Controller
      */
     public function show($id)
     {
-        //
+        return response(Restaurant::findOrFail($id)->jsonSerialize(), Response::HTTP_OK);
     }
 
     /**
@@ -71,7 +86,11 @@ class RestaurantController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $restaurant = Restaurant::findOrFail($id);
+        $restaurant->update($request->all());
+        $restaurant->save();
+
+        return response(null,Response::HTTP_OK);
     }
 
     /**
@@ -82,6 +101,8 @@ class RestaurantController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $restaurant = Restaurant::findorFail($id);
+        $restaurant->delete();
+        return response(null, Response::HTTP_OK);
     }
 }
